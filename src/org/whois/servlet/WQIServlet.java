@@ -36,32 +36,16 @@ public class WQIServlet extends HttpServlet {
 		pattern = Pattern.compile(WHOIS_SERVER_PATTERN);
 	}
 
-	/**
-	 * Default constructor.
-	 */
 	public WQIServlet() {
-		// TODO Auto-generated constructor stub
-		// String domainName = "west.cc";
-		// System.out.println(getWhois(domainName));
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doPost(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		Date startTime = new Date();
 		String domainName = request.getParameter("domainName");
 		Date endTime = new Date();
@@ -78,7 +62,7 @@ public class WQIServlet extends HttpServlet {
 			Properties dbProp = PropertiesUtil.readProperties(WHOIS£ßRESOURCES);
 			String whoisConnectUrl = dbProp.getProperty(domainSuffix);
 			if (whoisConnectUrl == null) {
-				connectAllWhoisByDomain(dbProp, domainName);
+//				connectAllWhoisByDomain(dbProp, domainName);
 			} else {
 				whois.connect(whoisConnectUrl);
 				String whoisData1 = whois.query("=" + domainName);
@@ -100,6 +84,8 @@ public class WQIServlet extends HttpServlet {
 
 	}
 
+	@SuppressWarnings("all")
+	@Deprecated
 	private String connectAllWhoisByDomain(Properties dbProp, String domainName)
 			throws SocketException, IOException {
 		StringBuilder result = new StringBuilder("");
