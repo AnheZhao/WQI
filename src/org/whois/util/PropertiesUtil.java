@@ -28,9 +28,9 @@ public class PropertiesUtil {
 		}
 		dbProps = new Properties();
 		dbProps.load(inputStream);
-		for (Object key : dbProps.keySet()) {
-			System.out.println(key + "---" + dbProps.get(key));
-		}
+//		for (Object key : dbProps.keySet()) {
+//			System.out.println(key + "---" + dbProps.get(key));
+//		}
 		inputStream.close();
 
 		return dbProps;
@@ -47,7 +47,7 @@ public class PropertiesUtil {
 		Calendar cal = Calendar.getInstance(); 
 		long time = file.lastModified(); 
 		cal.setTimeInMillis(time); 
-		System.out.println("修改时间： " + sdf.format(cal.getTime())); 
+		System.out.println("淇敼鏃堕棿锛�" + sdf.format(cal.getTime())); 
 		return sdf.format(cal.getTime());
 	}
 
