@@ -21,12 +21,14 @@ public class WhoisQServlet {
 		pattern = Pattern.compile(WHOIS_SERVER_PATTERN);
 	}
 
+	private static final String WHOIS£ßRESOURCES = "whois.properties"; 
+	
 	public static void main(String[] args) {
 
 		WhoisTest obj = new WhoisTest();
-		System.out.println(obj.getWhois("google.com"));
+		System.out.println(obj.getWhois("leiphone.com"));
 		System.out.println("--------------------------------------------------------------------------------------------------");
-		System.out.println(obj.getWhois("ename.com"));
+		System.out.println(obj.getWhois("csdn.net"));
 		System.out.println("--------------------------------------------------------------------------------------------------");
 		System.out.println(obj.getWhois("west.cc"));
 		System.out.println("Done");
@@ -39,7 +41,7 @@ public class WhoisQServlet {
 		WhoisClient whois = new WhoisClient();
 		try {
 			String domainSuffix = domainName.substring(domainName.lastIndexOf("."),domainName.length());
-			Properties dbProp = PropertiesUtil.readProperties("whois.properties");
+			Properties dbProp = PropertiesUtil.readProperties(WHOIS£ßRESOURCES);
 			String whoisConnect = dbProp.getProperty(domainSuffix);
 			whois.connect(whoisConnect);
 			String whoisData1 = whois.query("=" + domainName);
