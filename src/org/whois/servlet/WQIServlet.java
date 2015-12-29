@@ -2,9 +2,9 @@ package org.whois.servlet;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Properties;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.net.whois.WhoisClient;
+import org.whois.dao.WQRDao;
+import org.whois.model.WhoisQueryRecord;
 import org.whois.util.PropertiesUtil;
+import org.whois.util.WebUtils;
 
 /**
  * Servlet implementation class WQIServlet
@@ -24,6 +27,8 @@ import org.whois.util.PropertiesUtil;
 public class WQIServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = Logger.getLogger("WQIServlet");
 
 	private static Pattern pattern;
 	private Matcher matcher;
@@ -46,23 +51,30 @@ public class WQIServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		Date startTime = new Date();
+
+		request.setCharacterEncoding("utf-8");
 		String domainName = request.getParameter("domainName");
-		Date endTime = new Date();
-		System.out.println(getWhois(domainName));
-		System.out.println("≤È—Ø”√ ±£∫" + ((endTime.getTime() - startTime.getTime())/1000.00 + "√Î"));
+		String result = getWhois(request, domainName);
+		logger.info(result);
+		response.getOutputStream().print(result);
 	}
 
-	public String getWhois(String domainName) {
+	public String getWhois(HttpServletRequest request,String domainName) {
+		Date startTime = new Date();
+		Date endTime = null;
+		String domainSuffix = null;
+		String domainPrefix = null;
 		StringBuilder result = new StringBuilder("");
 		WhoisClient whois = new WhoisClient();
 		try {
-			String domainSuffix = domainName.substring(
-					domainName.lastIndexOf("."), domainName.length());
+			domainSuffix = domainName.substring(domainName.lastIndexOf("."),
+					domainName.length());
+			domainPrefix = domainName.substring(0,
+					domainName.lastIndexOf("."));
 			Properties dbProp = PropertiesUtil.readProperties(WHOIS£ﬂRESOURCES);
 			String whoisConnectUrl = dbProp.getProperty(domainSuffix);
 			if (whoisConnectUrl == null) {
-//				connectAllWhoisByDomain(dbProp, domainName);
+				// connectAllWhoisByDomain(dbProp, domainName);
 			} else {
 				whois.connect(whoisConnectUrl);
 				String whoisData1 = whois.query("=" + domainName);
@@ -75,10 +87,24 @@ public class WQIServlet extends HttpServlet {
 					result.append(whoisData2);
 				}
 			}
+			endTime = new Date();
 		} catch (SocketException e) {
-			e.printStackTrace();
+			logger.info("SocketException :" + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.info("IOException :" + e.getMessage());
+		} finally {
+			try {
+				WhoisQueryRecord wqr = new WhoisQueryRecord();
+				wqr.setWqrDomain(domainName);
+				wqr.setWqrUseTime(endTime.getTime() - startTime.getTime());
+				wqr.setWqrSuffix(domainSuffix);
+				wqr.setWqrPrefix(domainPrefix);
+				wqr.setWqrIpAddress(WebUtils.getIpAddr(request));
+				WQRDao wqrDao = new WQRDao();
+				wqrDao.addWQR(wqr);
+			} catch (Exception e) {
+				logger.info("insert sql error :" + e.getMessage());
+			}
 		}
 		return result.toString();
 
@@ -91,7 +117,8 @@ public class WQIServlet extends HttpServlet {
 		StringBuilder result = new StringBuilder("");
 		WhoisClient whois = new WhoisClient();
 		for (Object whoisConnectKey : dbProp.keySet()) {
-			String whoisConnectUrl = dbProp.getProperty(whoisConnectKey.toString());
+			String whoisConnectUrl = dbProp.getProperty(whoisConnectKey
+					.toString());
 			try {
 				whois.connect(whoisConnectUrl);
 			} catch (Exception e) {
@@ -106,8 +133,6 @@ public class WQIServlet extends HttpServlet {
 						whoisServerUrl);
 				result.append(whoisData2);
 			}
-			System.out.println(result);
-			System.out.println();
 		}
 		return result.toString();
 	}
