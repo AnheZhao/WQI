@@ -13,6 +13,7 @@ public class WhoisQueryRecord implements Serializable{
 	private String wqrPrefix;
 	private String wqrSuffix;
 	private Long wqrUseTime;
+	private Integer wqrStatus;
 	private String wqrIpAddress;
 
 	public Integer getWqrId() {
@@ -53,6 +54,14 @@ public class WhoisQueryRecord implements Serializable{
 
 	public void setWqrUseTime(Long wqrUseTime) {
 		this.wqrUseTime = wqrUseTime;
+	}
+
+	public Integer getWqrStatus() {
+		return wqrStatus;
+	}
+
+	public void setWqrStatus(Integer wqrStatus) {
+		this.wqrStatus = wqrStatus;
 	}
 
 	public String getWqrIpAddress() {

@@ -99,6 +99,7 @@ public class WQIServlet extends HttpServlet {
 				wqr.setWqrUseTime(endTime.getTime() - startTime.getTime());
 				wqr.setWqrSuffix(domainSuffix);
 				wqr.setWqrPrefix(domainPrefix);
+				wqr.setWqrStatus(1);
 				wqr.setWqrIpAddress(WebUtils.getIpAddr(request));
 				WQRDao wqrDao = new WQRDao();
 				wqrDao.addWQR(wqr);
